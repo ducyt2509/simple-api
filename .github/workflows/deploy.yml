@@ -19,7 +19,7 @@ jobs:
 
       - name: Deploy to Server
         run: |
-          ssh -o StrictHostKeyChecking=no username@hostname_or_ip_address << 'EOF'
+          ssh -o StrictHostKeyChecking=no ${{secrets.user}}@${{secrets.host}} << 'EOF'
             cd /root/simple-api
             git pull origin main
             npm install
