@@ -2,7 +2,7 @@ module.exports = {
   apps: [
     {
       name: 'api-8001',
-      script: './app.js',
+      script: './index.js',
       args: 'port 8001',
       instances: 1,
       autorestart: true,
@@ -15,7 +15,7 @@ module.exports = {
     },
     {
       name: 'api-8002',
-      script: './app.js',
+      script: './index.js',
       args: 'port 8002',
       instances: 1,
       autorestart: true,
@@ -28,7 +28,7 @@ module.exports = {
     },
     {
       name: 'api-8003',
-      script: './app.js',
+      script: './index.js',
       args: 'port 8003',
       instances: 1,
       autorestart: true,
