@@ -1,4 +1,4 @@
-name: Deploy API
+name: Deploy Node.js App with PM2
 
 on:
   push:
@@ -10,24 +10,40 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # Bước 1: Check out repository
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
+      # Bước 2: Cài đặt Node.js
       - name: Set up Node.js
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
-          node-version: '16'
+          node-version: '20'
 
+      # Bước 3: Cài đặt dependencies
       - name: Install dependencies
         run: npm install
 
-      - name: Build the application
-        run: npm run build
+      # Bước 4: Build ứng dụng (nếu có bước build)
+      - name: Build application
+        run: npm run build # Bỏ qua bước này nếu không cần build
 
-      - name: Deploy via SSH
+      # Bước 5: Thiết lập SSH để deploy lên server
+      - name: Setup SSH
+        uses: webfactory/ssh-agent@v0.7.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: Deploy with PM2
         env:
-          HOST: ${{ secrets.HOST }}
-          USER: ${{ secrets.USER }}
-          KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          HOST: ${{ secrets.SERVER_HOST }}
+          USER: ${{ secrets.SERVER_USER }}
         run: |
-          ssh -i $KEY $USER@$HOST "cd /path/to/your/app && git pull origin main && pm2 reload all"
+          ssh -o StrictHostKeyChecking=no $USER@$HOST << 'EOF'
+            cd /root/simple-api
+
+            git pull origin main
+
+            npm install
+            pm2 reload ecosystem.config.js --env production
+          EOF
