@@ -1,0 +1,33 @@
+name: Deploy API
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '16'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build the application
+        run: npm run build
+
+      - name: Deploy via SSH
+        env:
+          HOST: ${{ secrets.HOST }}
+          USER: ${{ secrets.USER }}
+          KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+        run: |
+          ssh -i $KEY $USER@$HOST "cd /path/to/your/app && git pull origin main && pm2 reload all"
