@@ -11,9 +11,11 @@ let users = [
   { id: 2, name: 'Bob', age: 30 },
 ];
 
+
 app.get('/api/users', (req, res) => {
   res.json(users);
 });
+
 
 app.get('/api/users/:id', (req, res) => {
   const user = users.find((u) => u.id === parseInt(req.params.id));
