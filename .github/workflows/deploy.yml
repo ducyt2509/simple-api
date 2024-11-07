@@ -1,45 +1,27 @@
 name: Deploy Node.js App with PM2
-
 on:
   push:
     branches:
-      - main
+      - main # Chỉ khi commit lên nhánh main mới chạy
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
 
     steps:
-      # Bước 1: Check out repository
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v2
 
-      # Bước 2: Cài đặt Node.js
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '20'
-
-      # Bước 3: Cài đặt dependencies
-      - name: Install dependencies
-        run: npm install
-
-      # Bước 5: Thiết lập SSH để deploy lên server
-      - name: Setup SSH
-        uses: webfactory/ssh-agent@v0.7.0
+      - name: Set up SSH
+        uses: webfactory/ssh-agent@v0.5.3
         with:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
-      - name: Deploy with PM2
-        env:
-          HOST: ${{ secrets.SERVER_HOST }}
-          USER: ${{ secrets.SERVER_USER }}
+      - name: Deploy to Server
         run: |
-          ssh -o StrictHostKeyChecking=no $USER@$HOST << 'EOF'
+          ssh -o StrictHostKeyChecking=no username@hostname_or_ip_address << 'EOF'
             cd /root/simple-api
-
             git pull origin main
-
             npm install
             pm2 reload ecosystem.config.js --env production
           EOF
